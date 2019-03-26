@@ -26,20 +26,25 @@ void showBoard(char* board)
 void displayRules()
 {
 	printf("\n");
-	printf(" 1 | 2 | 3 \n");
-	printf("----------- \n");
-	printf(" 4 | 5 | 6 \n");
-	printf("----------- \n");
-	printf(" 7 | 8 | 9 \n");
+	printf("\t\t\t  ******INSTRUCTIONS******\n");
 	printf("\n");
-	printf("The first player to move will be 'X' and the second will be 'O'");
+	printf("\t\t\t\t 1 | 2 | 3 \n");
+	printf("\t\t\t\t----------- \n");
+	printf("\t\t\t\t 4 | 5 | 6 \n");
+	printf("\t\t\t\t----------- \n");
+	printf("\t\t\t\t 7 | 8 | 9 \n");
+	printf("\n");
+	printf("\t 1. The first player to move will be 'X' and the second will be 'O' \n");
+	printf("\t 2. Players will alternate turns until one player gets 3 in a row \n\t or the match ends in a draw.\n");
+	printf("\t 3. To play, enter the number in the grid above in the position you\n\t would like to enter. \n");
 	printf("\n\n");
-
 	return;
 }
 
+// Game Board Functions
+
 // initialisation
-void init(char* board)
+void initialiseBoard(char* board)
 {
 	int idx;
 	for(idx=0; idx <= MAX; idx++)
@@ -71,14 +76,10 @@ void getMove(char* board)
 	printf("Player %c Please enter a number: ", player);
 	scanf("%d", &a);
 	bool checkMove = true;
-	// if(&a>=1 || &a<=9)
-	// {
-		// printf("The numbers entered must be between 1 and 9 \n");
-		// getMove(board);
-	// }
+
 	// alpha characters
 	
-	// Checks the element in the array and if theres a space
+	// Checks each element in the array and if theres a space
 	if(a==1 && board[0] == ' ')
 	{
 		board[0] = player;
@@ -123,6 +124,16 @@ void getMove(char* board)
 	{
 		board[8] = player;
 		checkMove = true;
+	}
+	else if(a<1 || a>9)
+	{
+		printf("The numbers entered must be between 1 and 9 \n");
+		getMove(board);
+	}
+	else if(isalpha(a) == 0)
+	{
+		printf("You must enter a number between 1 and 9\n");
+		getMove(board);
 	}
 	else 
 	{
@@ -237,12 +248,11 @@ char winGame(char* board)
 	return('\n');
 }
 
-/*
-// stack stuff
+// Stack Functions
 
 struct stack
 {
-	char array[MAX][MAX];
+	char array[MAX][MAX]; // [rows][columns]
 	int top;
 };
 
@@ -251,6 +261,7 @@ void initialiseStack(struct stack *s)
 {
 	int row;
 	int column;
+	
 	for(row=0; row <= MAX; row++)
 	{
 		for(column=0; column <= MAX; column++)
@@ -262,19 +273,31 @@ void initialiseStack(struct stack *s)
 	s->top = -1;
 }
 
+/*
+int isEmpty(struct stack *s)
+{
+	return !s;
+}
+*/
+
 // Push to a stack
 void push(struct stack *s, char* board)
 {
 	int row;
+	int column;
 	// Add to the top of the stack
 	s->top++;
 	// loop through array
 	for(row=0; row <= MAX; row++)
 	{
-		s->array[s->top][row] = board[row];
+		for(column=0; column <= MAX; column++)
+		{
+			s->array[s->top][row] = board[row];
+		}
+
 	}	
 }
-
+/*
 //display function for stack
 void showStack(struct stack *s)
 {
@@ -283,9 +306,9 @@ void showStack(struct stack *s)
 	for(row=0; row<=MAX; row++)
 	{
 		showBoard(s->array[row]);
-		row++;
 	}
 }
+*/
 
 // pop the stack
 void pop(struct stack *s, char* board)
@@ -296,65 +319,70 @@ void pop(struct stack *s, char* board)
 	for(row=0; row<=MAX; row++)
 	{
 		board[row] = s->array[s->top][row];
-		//row++;
 	}
 	showBoard(board);
+	
 }
 
-*/
 int main(void)
 {
 	// Create board array
 	char board[8];
-	//
-	// struct stack s;
-	// initialiseStack(&s);
-	// showStack(&s);
-	// Display rules
+	// Create stack
+	struct stack s;
+	// Initialise stack
+	initialiseStack(&s);
+	// Display the rules of the game
 	displayRules();
 	// Initialise board
-	init(board);
+	initialiseBoard(board);
 	// Counter for the moves
 	int count;
 	count = 0;
 	// While the game is still not won
 	while(winGame(board)!= true)
 	{
+		
 		// Get players move
 		getMove(board);
 		// Show the current board
 		showBoard(board);
+		// If X has three in a row, output they have won
 		if(winGame(board) == 'X')
 		{
-			printf("Player X wins!");
+			printf("Player X wins!\n ... Exiting Game ...\n");
 			break;
 		}
-		if(winGame(board) == 'X') 
+		// If X has three in a row, output they have won
+		if(winGame(board) == 'O') 
 		{
-			printf("Player O wins!");
+			printf("Player O wins!\n ... Exiting Game ...\n");
 			break;
 		}
+		// when the counter =8, match is a draw
 		if(count == 8)
 		{
-			printf("Match is a draw.");
+			printf("Match is a draw.\n ... Exiting Game ...\n");
 			break;
 		}
 		// Switch the player
 		playerMove(board);
-		//push(&s, board);
+		// Add each board to the stack
+		push(&s, board);
 		count++;
-		//printf("count: %d", count);
-		
 	}
-	// Pop for each of the moves played
-	// pop(&s, board);
-	// pop(&s, board);
-	// pop(&s, board); 
-	// pop(&s, board); 
-	// pop(&s, board); 
-	// pop(&s, board); 
-	// pop(&s, board); 
-	// pop(&s, board); 
-	// pop(&s, board); 
+	
+	// Pop each board
+	printf("*****Replay of Game*****\n");
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	pop(&s, board);
+	
 	return 0;
 }
